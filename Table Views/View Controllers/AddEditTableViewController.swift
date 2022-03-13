@@ -17,7 +17,7 @@ class AddEditTableViewController: UITableViewController {
     @IBOutlet weak var saveButton: UIBarButtonItem!
     
     // MARK: - Properties
-   
+    
     var emoji = Emoji()
     var saveButtonState: Bool = false
     
@@ -59,19 +59,19 @@ class AddEditTableViewController: UITableViewController {
         }
     }
     
-
+    
     
     // MARK: - Navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-
+        
         saveEmoji()
     }
-
+    
     // MARK: - Actions
     
     @IBAction func textFieldChanged(_ sender: UITextField) {
         // While editing text fields - is constantly checking if save button can be made enabled
         changeSaveButtonState()
     }
-  
+    
 }

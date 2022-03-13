@@ -4,7 +4,9 @@
 //
 //  Created by notwo on 3/9/22.
 //
-struct Emoji {
+
+import Foundation
+struct Emoji: Codable {
     var symbol: String
     var name: String
     var description: String
@@ -24,7 +26,7 @@ extension Emoji {
             Emoji(symbol: "⭐️", name: "Звезда", description: "Желтая пятиконечная звезда", usage: "Когда что-то нравится"),
             Emoji(symbol: "🐶", name: "Собака", description: "Мордочка собаки", usage: "Что-то дружелюбное"),
             Emoji(symbol: "✅", name: "Галочка", description: "Галочка на зеленом фоне", usage: "Дело сделано"),
-            Emoji(symbol: "⛔️", name: "Стоп", description: "Знак СТОП", usage: "Проезд запрещен"),
+            Emoji(symbol: "⛔️", name: "Стоп", description: "Знак СТОП", usage: "Проезд запрещен!"),
 
         ]
     }

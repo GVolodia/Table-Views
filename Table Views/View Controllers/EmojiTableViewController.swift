@@ -12,16 +12,42 @@ class EmojiTableViewController: UITableViewController {
     // MARK: - Properties
     let cellManager = CellManager()
     var emojis = [Emoji]()
-
+    var defaults = UserDefaults.standard
+    
     
     // MARK: - Methods
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        emojis = Emoji.loadAll() ?? Emoji.loadDefault()
-
-        // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-         self.navigationItem.leftBarButtonItem = self.editButtonItem
+        loadData()
+      
+        // Set edit button on NavigationBar
+        self.navigationItem.leftBarButtonItem = self.editButtonItem
+        
+    }
+    
+    func loadData() {
+        // Loading data from stored in UserDefault, if any
+        if let savedEmojis = defaults.object(forKey: "Emojis") as? Data {
+            let decoder = JSONDecoder()
+            if let decodedEmojis = try? decoder.decode([Emoji].self, from: savedEmojis) {
+                emojis = decodedEmojis
+            } else {
+                emojis = Emoji.loadAll() ?? Emoji.loadDefault()
+            }
+        }
+        else {
+            // If there is no data stored in UserDefault, then loading data from App
+            emojis = Emoji.loadDefault()
+        }
+    }
+    
+    func saveDataToUserDefaults(_ emojis: [Emoji]) {
+        let encoder = JSONEncoder()
+        if let encodedEmojis = try? encoder.encode(emojis) {
+            
+            defaults.set(encodedEmojis, forKey: "Emojis")
+        }
     }
     
     // MARK: - Navigation
@@ -34,12 +60,12 @@ class EmojiTableViewController: UITableViewController {
         destination.emoji = emoji
         destination.saveButtonState = true
     }
-
+    
 }
 
 // MARK: - UITableViewDataSource
 extension EmojiTableViewController /* UITableViewDataSource */ {
-
+    
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return emojis.count
     }
@@ -53,6 +79,9 @@ extension EmojiTableViewController /* UITableViewDataSource */ {
     override func tableView(_ tableView: UITableView, moveRowAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
         let movedEmoji = emojis.remove(at: sourceIndexPath.row)
         emojis.insert(movedEmoji, at: destinationIndexPath.row)
+        
+        saveDataToUserDefaults(emojis)
+        
         tableView.reloadData()
     }
     
@@ -68,6 +97,9 @@ extension EmojiTableViewController /* UITableViewDelegate */ {
         switch editingStyle {
         case .delete:
             emojis.remove(at: indexPath.row)
+            
+            saveDataToUserDefaults(emojis)
+            
             tableView.deleteRows(at: [indexPath], with: .fade)
         case .insert:
             break
@@ -91,13 +123,19 @@ extension EmojiTableViewController {
         if let selectedPath = tableView.indexPathForSelectedRow {
             // Edited cell
             emojis[selectedPath.row] = emoji
-//            tableView.reloadData()
+            
+            saveDataToUserDefaults(emojis)
+            
+            //            tableView.reloadData()
             tableView.reloadRows(at: [selectedPath], with: .automatic)
         } else {
             // Added cell
             let indexPath = IndexPath(row: emojis.count, section: 0)
             emojis.append(emoji)
-//            tableView.reloadData()
+            
+            saveDataToUserDefaults(emojis)
+            
+            //            tableView.reloadData()
             tableView.insertRows(at: [indexPath], with: .automatic)
         }
     }
